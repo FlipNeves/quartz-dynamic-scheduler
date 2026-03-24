@@ -1,0 +1,6 @@
+@WorkerQuartzInteraction_HostAddress = http://localhost:5008
+
+GET {{WorkerQuartzInteraction_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
