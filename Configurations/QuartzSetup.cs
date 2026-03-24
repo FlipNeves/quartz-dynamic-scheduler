@@ -1,4 +1,7 @@
 using Quartz;
+using WorkerQuartzInteraction.Domain.Interfaces;
+using WorkerQuartzInteraction.Infrastructure.Broker;
+using WorkerQuartzInteraction.Infrastructure.Repositories;
 using WorkerQuartzInteraction.Infrastructure.Scheduler;
 using WorkerQuartzInteraction.Jobs;
 
@@ -8,27 +11,35 @@ namespace WorkerQuartzInteraction.Configurations
     {
         public static void AddQuartzScheduler(this IServiceCollection services, IConfiguration configuration)
         {
-            // Pega as cron expressions do appsettings.json
-            var cronSampleJob = configuration.GetValue<string>("QuartzJobs:SampleJob:Cron") ?? "0/30 * * * * ?"; // Padrão: a cada 30 segundos
+            // Pega as cron expressions do appsettings.json (para jobs estáticos)
+            var cronSampleJob = configuration.GetValue<string>("QuartzJobs:SampleJob:Cron") ?? "0/30 * * * * ?";
 
             services.AddQuartz(q =>
             {
-                // Configuração base (opcional: persistência em BD, JSON serializer, etc.)
-                
-                // Registra o SampleJob
-                var jobKey = new JobKey(nameof(SampleQuartzJob));
+                // Static Sample Job Configuration
+                var jobKey = new JobKey("StaticSampleJob");
                 q.AddJob<QuartzJobAdapter<SampleQuartzJob>>(opts => opts.WithIdentity(jobKey));
 
                 q.AddTrigger(opts => opts
                     .ForJob(jobKey)
-                    .WithIdentity($"{nameof(SampleQuartzJob)}-trigger")
+                    .WithIdentity("StaticSampleJob-trigger")
                     .WithCronSchedule(cronSampleJob));
             });
 
-            // Quartz.Extensions.Hosting hospeda o Quartz como um IHostedService nativo
+            // Standard Quartz Hosting
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-            // Registro dos Jobs de negócio no DI
+            // 1. Dynamic Scheduling Infrastructure
+            services.AddSingleton<JobSchedulerService>();
+            services.AddHostedService<JobInitializerService>();
+            
+            // 2. Repository Mapping
+            services.AddScoped<IJobConfigurationRepository, JobConfigurationRepository>();
+
+            // 3. Broker Implementation
+            services.AddSingleton<IEventPublisher, EventPublisher>();
+
+            // 4. Register Domain Jobs for DI
             services.AddScoped<SampleQuartzJob>();
         }
     }
