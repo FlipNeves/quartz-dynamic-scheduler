@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/WorkerQuartzInteraction/WorkerQuartzInteraction.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/WorkerQuartzInteraction.Tests/WorkerQuartzInteraction.Tests.csproj" />
-  </Folder>
-</Solution>

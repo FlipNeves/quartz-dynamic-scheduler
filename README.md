@@ -4,7 +4,7 @@ A .NET 10 template for background jobs whose schedule lives in a database. Quart
 
 Change a job's cron or turn it off in the database, or through the API, and the scheduler follows without a redeploy.
 
-> The same template built on Hangfire: [WorkerBrokerInteration](https://github.com/FlipNeves/WorkerBrokerInteration). Both share the domain, persistence, broker and API. Only the scheduler adapter changes, so the two are a side-by-side comparison of Hangfire and Quartz.NET.
+> The same template built on Hangfire: [hangfire-dynamic-scheduler](https://github.com/FlipNeves/hangfire-dynamic-scheduler). Both share the domain, persistence, broker and API. Only the scheduler adapter changes, so the two are a side-by-side comparison of Hangfire and Quartz.NET.
 
 ## How it works
 
@@ -38,7 +38,7 @@ You need the .NET 10 SDK and Docker.
 
 ```bash
 docker compose up -d
-dotnet run --project src/WorkerQuartzInteraction
+dotnet run --project src/QuartzDynamicScheduler
 ```
 
 - Swagger: http://localhost:5008/swagger
@@ -92,7 +92,7 @@ Add the queue to `QueueEventType`, inherit from `EventConsumerBase`, implement `
 ## Project structure
 
 ```
-src/WorkerQuartzInteraction
+src/QuartzDynamicScheduler
 ├── Configurations/      options and dependency injection
 ├── Consumers/           RabbitMQ consumers
 ├── Controllers/         jobs API and queue test endpoints
@@ -103,7 +103,7 @@ src/WorkerQuartzInteraction
 │   └── Scheduling/      Quartz.NET adapter and job runner
 ├── Jobs/                sample jobs
 └── Services/            synchronizer, runner and job catalog
-tests/WorkerQuartzInteraction.Tests
+tests/QuartzDynamicScheduler.Tests
 ```
 
 ## Design notes
